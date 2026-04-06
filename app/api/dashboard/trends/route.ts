@@ -8,7 +8,11 @@ import mongoose from "mongoose";
 
 export const GET = requireAuth(
   requireRole("analyst")(
-    async (_req: NextRequest, _context: { params: Promise<Record<string, string>> }, session: SessionUser) => {
+    async (
+      _req: NextRequest,
+      _context: { params: Promise<Record<string, string>> },
+      session: SessionUser,
+    ) => {
       try {
         await connectDB();
 
@@ -19,7 +23,11 @@ export const GET = requireAuth(
 
         const matchStage =
           session.role === "viewer"
-            ? { isDeleted: false, date: { $gte: twelveMonthsAgo }, userId: new mongoose.Types.ObjectId(session.id) }
+            ? {
+                isDeleted: false,
+                date: { $gte: twelveMonthsAgo },
+                userId: new mongoose.Types.ObjectId(session.id),
+              }
             : { isDeleted: false, date: { $gte: twelveMonthsAgo } };
 
         const trends = await Record.aggregate([
@@ -27,8 +35,12 @@ export const GET = requireAuth(
           {
             $group: {
               _id: { year: { $year: "$date" }, month: { $month: "$date" } },
-              income: { $sum: { $cond: [{ $eq: ["$type", "income"] }, "$amount", 0] } },
-              expenses: { $sum: { $cond: [{ $eq: ["$type", "expense"] }, "$amount", 0] } },
+              income: {
+                $sum: { $cond: [{ $eq: ["$type", "income"] }, "$amount", 0] },
+              },
+              expenses: {
+                $sum: { $cond: [{ $eq: ["$type", "expense"] }, "$amount", 0] },
+              },
               count: { $sum: 1 },
             },
           },
@@ -50,6 +62,6 @@ export const GET = requireAuth(
       } catch {
         return apiError("Internal server error", 500);
       }
-    }
-  )
+    },
+  ),
 );

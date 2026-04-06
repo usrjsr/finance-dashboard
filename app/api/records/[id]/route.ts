@@ -13,14 +13,24 @@ export const GET = requireAuth(
   async (_req: NextRequest, context: Params, session: SessionUser) => {
     try {
       const { id } = (await context.params) as { id: string };
-      if (!mongoose.isValidObjectId(id)) return apiError("Invalid record ID format", 400);
+      if (!mongoose.isValidObjectId(id))
+        return apiError("Invalid record ID format", 400);
 
       await connectDB();
-      const record = await Record.findOne({ _id: id, isDeleted: false }).populate("userId", "name email");
+      const record = await Record.findOne({
+        _id: id,
+        isDeleted: false,
+      }).populate("userId", "name email");
       if (!record) return apiError("Record not found", 404);
 
-      if (session.role === "viewer" && record.userId.toString() !== session.id) {
-        return apiError("Access denied. This record does not belong to you.", 403);
+      if (
+        session.role === "viewer" &&
+        record.userId.toString() !== session.id
+      ) {
+        return apiError(
+          "Access denied. This record does not belong to you.",
+          403,
+        );
       }
 
       return apiResponse({
@@ -37,7 +47,7 @@ export const GET = requireAuth(
     } catch {
       return apiError("Internal server error", 500);
     }
-  }
+  },
 );
 
 export const PUT = requireAuth(
@@ -45,12 +55,16 @@ export const PUT = requireAuth(
     async (req: NextRequest, context: Params, _session: SessionUser) => {
       try {
         const { id } = (await context.params) as { id: string };
-        if (!mongoose.isValidObjectId(id)) return apiError("Invalid record ID format", 400);
+        if (!mongoose.isValidObjectId(id))
+          return apiError("Invalid record ID format", 400);
 
         const body = await req.json();
         const parsed = updateRecordSchema.safeParse(body);
         if (!parsed.success) {
-          return apiError(parsed.error.issues.map((e) => e.message).join(", "), 422);
+          return apiError(
+            parsed.error.issues.map((e) => e.message).join(", "),
+            422,
+          );
         }
 
         await connectDB();
@@ -63,7 +77,7 @@ export const PUT = requireAuth(
         const record = await Record.findOneAndUpdate(
           { _id: id, isDeleted: false },
           { $set: updateData },
-          { new: true, runValidators: true }
+          { new: true, runValidators: true },
         );
 
         if (!record) return apiError("Record not found", 404);
@@ -81,8 +95,8 @@ export const PUT = requireAuth(
       } catch {
         return apiError("Internal server error", 500);
       }
-    }
-  )
+    },
+  ),
 );
 
 export const DELETE = requireAuth(
@@ -90,21 +104,25 @@ export const DELETE = requireAuth(
     async (_req: NextRequest, context: Params, _session: SessionUser) => {
       try {
         const { id } = (await context.params) as { id: string };
-        if (!mongoose.isValidObjectId(id)) return apiError("Invalid record ID format", 400);
+        if (!mongoose.isValidObjectId(id))
+          return apiError("Invalid record ID format", 400);
 
         await connectDB();
         const record = await Record.findOneAndUpdate(
           { _id: id, isDeleted: false },
           { $set: { isDeleted: true } },
-          { new: true }
+          { new: true },
         );
 
         if (!record) return apiError("Record not found", 404);
 
-        return apiResponse({ message: "Record deleted successfully", id: record._id.toString() });
+        return apiResponse({
+          message: "Record deleted successfully",
+          id: record._id.toString(),
+        });
       } catch {
         return apiError("Internal server error", 500);
       }
-    }
-  )
+    },
+  ),
 );

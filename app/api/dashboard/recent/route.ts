@@ -8,13 +8,20 @@ import mongoose from "mongoose";
 
 export const GET = requireAuth(
   requireRole("analyst")(
-    async (_req: NextRequest, _context: { params: Promise<Record<string, string>> }, session: SessionUser) => {
+    async (
+      _req: NextRequest,
+      _context: { params: Promise<Record<string, string>> },
+      session: SessionUser,
+    ) => {
       try {
         await connectDB();
 
         const filter =
           session.role === "viewer"
-            ? { isDeleted: false, userId: new mongoose.Types.ObjectId(session.id) }
+            ? {
+                isDeleted: false,
+                userId: new mongoose.Types.ObjectId(session.id),
+              }
             : { isDeleted: false };
 
         const records = await Record.find(filter)
@@ -37,6 +44,6 @@ export const GET = requireAuth(
       } catch {
         return apiError("Internal server error", 500);
       }
-    }
-  )
+    },
+  ),
 );

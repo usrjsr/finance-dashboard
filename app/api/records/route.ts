@@ -2,20 +2,28 @@ import { NextRequest } from "next/server";
 import connectDB from "@/lib/db";
 import Record from "@/models/Record";
 import User from "@/models/User";
-import { apiResponse, apiError, parsePaginationParams, paginationMeta } from "@/lib/helpers";
+import {
+  apiResponse,
+  apiError,
+  parsePaginationParams,
+  paginationMeta,
+} from "@/lib/helpers";
 import { requireAuth, SessionUser } from "@/middlewares/auth";
 import { requireRole } from "@/middlewares/role";
 import { createRecordSchema } from "@/validators/record";
 import mongoose from "mongoose";
 
 export const GET = requireAuth(
-  async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, session: SessionUser) => {
+  async (
+    req: NextRequest,
+    _context: { params: Promise<Record<string, string>> },
+    session: SessionUser,
+  ) => {
     try {
       await connectDB();
 
       const { searchParams } = new URL(req.url);
       const { page, limit, skip } = parsePaginationParams(searchParams);
-
 
       const filter: Record<string, any> = { isDeleted: false };
 
@@ -38,7 +46,11 @@ export const GET = requireAuth(
       }
 
       const [records, total] = await Promise.all([
-        Record.find(filter).sort({ date: -1 }).skip(skip).limit(limit).populate("userId", "name email"),
+        Record.find(filter)
+          .sort({ date: -1 })
+          .skip(skip)
+          .limit(limit)
+          .populate("userId", "name email"),
         Record.countDocuments(filter),
       ]);
 
@@ -59,18 +71,25 @@ export const GET = requireAuth(
     } catch {
       return apiError("Internal server error", 500);
     }
-  }
+  },
 );
 
 export const POST = requireAuth(
   requireRole("admin")(
-    async (req: NextRequest, _context: { params: Promise<Record<string, string>> }, session: SessionUser) => {
+    async (
+      req: NextRequest,
+      _context: { params: Promise<Record<string, string>> },
+      session: SessionUser,
+    ) => {
       try {
         const body = await req.json();
 
         const parsed = createRecordSchema.safeParse(body);
         if (!parsed.success) {
-          return apiError(parsed.error.issues.map((e) => e.message).join(", "), 422);
+          return apiError(
+            parsed.error.issues.map((e) => e.message).join(", "),
+            422,
+          );
         }
 
         await connectDB();
@@ -82,7 +101,10 @@ export const POST = requireAuth(
 
         if (session.role === "admin") {
           if (!bodyUserId || !mongoose.isValidObjectId(bodyUserId)) {
-            return apiError("Admin must provide a valid user ID to assign this record to.", 400);
+            return apiError(
+              "Admin must provide a valid user ID to assign this record to.",
+              400,
+            );
           }
           const userObj = await User.findById(bodyUserId);
           if (!userObj || userObj.role !== "viewer") {
@@ -109,11 +131,11 @@ export const POST = requireAuth(
             description: record.description,
             createdAt: record.createdAt,
           },
-          { status: 201 }
+          { status: 201 },
         );
       } catch {
         return apiError("Internal server error", 500);
       }
-    }
-  )
+    },
+  ),
 );

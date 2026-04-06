@@ -5,7 +5,11 @@ import { apiResponse, apiError } from "@/lib/helpers";
 import { requireAuth, SessionUser } from "@/middlewares/auth";
 
 export const GET = requireAuth(
-  async (_req: NextRequest, _context: { params: Promise<Record<string, string>> }, session: SessionUser) => {
+  async (
+    _req: NextRequest,
+    _context: { params: Promise<Record<string, string>> },
+    session: SessionUser,
+  ) => {
     try {
       await connectDB();
 
@@ -24,5 +28,5 @@ export const GET = requireAuth(
     } catch {
       return apiError("Internal server error", 500);
     }
-  }
+  },
 );

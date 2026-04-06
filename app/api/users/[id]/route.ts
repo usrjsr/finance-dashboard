@@ -14,7 +14,8 @@ export const GET = requireAuth(
     async (_req: NextRequest, context: Params, _session: SessionUser) => {
       try {
         const { id } = (await context.params) as { id: string };
-        if (!mongoose.isValidObjectId(id)) return apiError("Invalid user ID format", 400);
+        if (!mongoose.isValidObjectId(id))
+          return apiError("Invalid user ID format", 400);
 
         await connectDB();
         const user = await User.findById(id).select("-password");
@@ -32,8 +33,8 @@ export const GET = requireAuth(
       } catch {
         return apiError("Internal server error", 500);
       }
-    }
-  )
+    },
+  ),
 );
 
 export const PUT = requireAuth(
@@ -41,19 +42,23 @@ export const PUT = requireAuth(
     async (req: NextRequest, context: Params, _session: SessionUser) => {
       try {
         const { id } = (await context.params) as { id: string };
-        if (!mongoose.isValidObjectId(id)) return apiError("Invalid user ID format", 400);
+        if (!mongoose.isValidObjectId(id))
+          return apiError("Invalid user ID format", 400);
 
         const body = await req.json();
         const parsed = updateUserSchema.safeParse(body);
         if (!parsed.success) {
-          return apiError(parsed.error.issues.map((e) => e.message).join(", "), 422);
+          return apiError(
+            parsed.error.issues.map((e) => e.message).join(", "),
+            422,
+          );
         }
 
         await connectDB();
         const user = await User.findByIdAndUpdate(
           id,
           { $set: parsed.data },
-          { new: true, runValidators: true }
+          { new: true, runValidators: true },
         ).select("-password");
 
         if (!user) return apiError("User not found", 404);
@@ -69,8 +74,8 @@ export const PUT = requireAuth(
       } catch {
         return apiError("Internal server error", 500);
       }
-    }
-  )
+    },
+  ),
 );
 
 export const DELETE = requireAuth(
@@ -78,14 +83,16 @@ export const DELETE = requireAuth(
     async (_req: NextRequest, context: Params, session: SessionUser) => {
       try {
         const { id } = (await context.params) as { id: string };
-        if (!mongoose.isValidObjectId(id)) return apiError("Invalid user ID format", 400);
-        if (id === session.id) return apiError("You cannot deactivate your own account", 400);
+        if (!mongoose.isValidObjectId(id))
+          return apiError("Invalid user ID format", 400);
+        if (id === session.id)
+          return apiError("You cannot deactivate your own account", 400);
 
         await connectDB();
         const user = await User.findByIdAndUpdate(
           id,
           { $set: { status: "inactive" } },
-          { new: true }
+          { new: true },
         ).select("-password");
 
         if (!user) return apiError("User not found", 404);
@@ -98,6 +105,6 @@ export const DELETE = requireAuth(
       } catch {
         return apiError("Internal server error", 500);
       }
-    }
-  )
+    },
+  ),
 );

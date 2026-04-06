@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const parsed = seedSchema.safeParse(body);
     if (!parsed.success) {
-      return apiError(parsed.error.issues.map((e) => e.message).join(", "), 422);
+      return apiError(
+        parsed.error.issues.map((e) => e.message).join(", "),
+        422,
+      );
     }
 
     const { secret, name, email, password } = parsed.data;
@@ -29,20 +32,30 @@ export async function POST(req: NextRequest) {
 
     const existingAdmin = await User.findOne({ role: "admin" });
     if (existingAdmin) {
-      return apiError("An admin account already exists. Seeding is disabled.", 409);
+      return apiError(
+        "An admin account already exists. Seeding is disabled.",
+        409,
+      );
     }
 
-    const admin = await User.create({ name, email, password, role: "admin", status: "active" });
+    const admin = await User.create({
+      name,
+      email,
+      password,
+      role: "admin",
+      status: "active",
+    });
 
     return apiResponse(
       {
-        message: "Admin account created successfully. Remove or disable this endpoint after first use.",
+        message:
+          "Admin account created successfully. Remove or disable this endpoint after first use.",
         id: admin._id.toString(),
         name: admin.name,
         email: admin.email,
         role: admin.role,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch {
     return apiError("Internal server error", 500);
