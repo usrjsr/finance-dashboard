@@ -24,7 +24,9 @@ export const updateRecordSchema = z
     category: z.string().min(1).max(100).trim().optional(),
     date: z
       .string()
-      .refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date format" })
+      .refine((val) => !isNaN(Date.parse(val)), {
+        message: "Invalid date format",
+      })
       .transform((val) => new Date(val))
       .optional(),
     description: z.string().max(500).trim().optional(),
@@ -38,7 +40,10 @@ export const recordFilterSchema = z.object({
   category: z.string().trim().optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-  page: z.string().optional().transform((val) => (val ? parseInt(val, 10) : 1)),
+  page: z
+    .string()
+    .optional()
+    .transform((val) => (val ? parseInt(val, 10) : 1)),
   limit: z
     .string()
     .optional()

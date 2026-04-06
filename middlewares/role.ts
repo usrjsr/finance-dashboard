@@ -13,7 +13,7 @@ const ROLE_LEVELS: Record<Role, number> = {
 type AuthedRouteHandler = (
   req: NextRequest,
   context: { params: Promise<Record<string, string>> },
-  session: SessionUser
+  session: SessionUser,
 ) => Promise<NextResponse>;
 
 export function requireRole(...allowedRoles: Role[]) {
@@ -21,15 +21,17 @@ export function requireRole(...allowedRoles: Role[]) {
     return async (
       req: NextRequest,
       context: { params: Promise<Record<string, string>> },
-      session: SessionUser
+      session: SessionUser,
     ): Promise<NextResponse> => {
       const userLevel = ROLE_LEVELS[session.role];
-      const hasPermission = allowedRoles.some((role) => userLevel >= ROLE_LEVELS[role]);
+      const hasPermission = allowedRoles.some(
+        (role) => userLevel >= ROLE_LEVELS[role],
+      );
 
       if (!hasPermission) {
         return apiError(
           `Access denied. Required: ${allowedRoles.join(" or ")}. Your role: ${session.role}`,
-          403
+          403,
         );
       }
 

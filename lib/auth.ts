@@ -14,13 +14,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         const parsed = loginSchema.safeParse(credentials);
-        if (!parsed.success) throw new Error("Invalid email or password format");
+        if (!parsed.success)
+          throw new Error("Invalid email or password format");
 
         await connectDB();
-        const user = await User.findOne({ email: parsed.data.email }).select("+password");
+        const user = await User.findOne({ email: parsed.data.email }).select(
+          "+password",
+        );
 
         if (!user) throw new Error("No user found with this email");
-        if (user.status === "inactive") throw new Error("Your account has been deactivated");
+        if (user.status === "inactive")
+          throw new Error("Your account has been deactivated");
 
         const isValid = await user.comparePassword(parsed.data.password);
         if (!isValid) throw new Error("Incorrect password");

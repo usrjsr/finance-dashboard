@@ -51,7 +51,7 @@ const RecordSchema = new Schema<IRecord>(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 RecordSchema.index({ userId: 1 });

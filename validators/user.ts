@@ -14,7 +14,12 @@ export const loginSchema = z.object({
 
 export const updateUserSchema = z
   .object({
-    name: z.string().min(2, "Name must be at least 2 characters").max(100).trim().optional(),
+    name: z
+      .string()
+      .min(2, "Name must be at least 2 characters")
+      .max(100)
+      .trim()
+      .optional(),
     role: z.enum(["viewer", "analyst", "admin"]).optional(),
     status: z.enum(["active", "inactive"]).optional(),
   })

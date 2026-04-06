@@ -7,10 +7,15 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "FinanceFlow — Dashboard",
-  description: "Role-based finance dashboard for tracking income, expenses, and analytics.",
+  description:
+    "Role-based finance dashboard for tracking income, expenses, and analytics.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en" className={inter.variable}>
       <body className="bg-slate-950 text-slate-50 antialiased">

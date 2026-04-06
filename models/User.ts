@@ -48,7 +48,7 @@ const UserSchema = new Schema<IUser>(
       default: "active",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 UserSchema.index({ email: 1 });
@@ -58,7 +58,9 @@ UserSchema.pre("save", async function () {
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-UserSchema.methods.comparePassword = async function (candidate: string): Promise<boolean> {
+UserSchema.methods.comparePassword = async function (
+  candidate: string,
+): Promise<boolean> {
   return bcrypt.compare(candidate, this.password);
 };
 

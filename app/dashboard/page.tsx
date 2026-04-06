@@ -9,15 +9,38 @@ import {
 
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-interface Summary { totalIncome: number; totalExpenses: number; netBalance: number; totalRecords: number; }
-interface TrendItem { year: number; month: number; income: number; expenses: number; net: number; }
-interface CategoryItem { category: string; totalIncome: number; totalExpenses: number; count: number; }
-interface RecentRecord { id: string; amount: number; type: string; category: string; date: string; description?: string; }
+interface Summary {
+  totalIncome: number;
+  totalExpenses: number;
+  netBalance: number;
+  totalRecords: number;
+}
+interface TrendItem {
+  year: number;
+  month: number;
+  income: number;
+  expenses: number;
+  net: number;
+}
+interface CategoryItem {
+  category: string;
+  totalIncome: number;
+  totalExpenses: number;
+  count: number;
+}
+interface RecentRecord {
+  id: string;
+  amount: number;
+  type: string;
+  category: string;
+  date: string;
+  description?: string;
+}
 
 function StatCard({ label, value, icon, color, subLabel }: { label: string; value: string; icon: React.ReactNode; color: string; subLabel?: string }) {
   return (
     <div className="glass-card p-5 flex items-start gap-4">
-      <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: color }}>
+      <div className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0" style={{ background: color }}>
         {icon}
       </div>
       <div className="min-w-0">
@@ -181,7 +204,7 @@ export default function DashboardPage() {
                   {recent.slice(0, 6).map((r) => (
                     <div key={r.id} className="flex items-center justify-between py-2 border-b last:border-0" style={{ borderColor: "rgba(99,102,241,0.08)" }}>
                       <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: r.type === "income" ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.15)" }}>
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0" style={{ background: r.type === "income" ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.15)" }}>
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={r.type === "income" ? "#34d399" : "#f87171"} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                             {r.type === "income"
                               ? <><polyline points="23 6 13.5 15.5 8.5 10.5 1 18" /><polyline points="17 6 23 6 23 12" /></>
@@ -194,7 +217,7 @@ export default function DashboardPage() {
                           <p className="text-xs text-slate-500">{new Date(r.date).toLocaleDateString()}</p>
                         </div>
                       </div>
-                      <span className="text-sm font-semibold ml-2 flex-shrink-0" style={{ color: r.type === "income" ? "#34d399" : "#f87171" }}>
+                      <span className="text-sm font-semibold ml-2 shrink-0" style={{ color: r.type === "income" ? "#34d399" : "#f87171" }}>
                         {r.type === "income" ? "+" : "-"}${r.amount.toLocaleString()}
                       </span>
                     </div>

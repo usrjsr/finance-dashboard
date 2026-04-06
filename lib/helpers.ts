@@ -11,9 +11,14 @@ interface PaginationParams {
   skip: number;
 }
 
-export function apiResponse(data: unknown, options: ApiResponseOptions = {}): NextResponse {
+export function apiResponse(
+  data: unknown,
+  options: ApiResponseOptions = {},
+): NextResponse {
   const { status = 200, headers } = options;
-  const body: Record<string, unknown> = { success: status >= 200 && status < 300 };
+  const body: Record<string, unknown> = {
+    success: status >= 200 && status < 300,
+  };
 
   if (body.success) {
     body.data = data;
@@ -28,7 +33,9 @@ export function apiError(message: string, status: number = 400): NextResponse {
   return apiResponse({ message, statusCode: status }, { status });
 }
 
-export function parsePaginationParams(searchParams: URLSearchParams): PaginationParams {
+export function parsePaginationParams(
+  searchParams: URLSearchParams,
+): PaginationParams {
   let page = parseInt(searchParams.get("page") || "1", 10);
   let limit = parseInt(searchParams.get("limit") || "10", 10);
 
