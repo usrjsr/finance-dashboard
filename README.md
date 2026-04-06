@@ -25,7 +25,6 @@ finance-dashboard/
 │   └── api/
 │       ├── auth/
 │       │   ├── [...nextauth]/route.ts   # NextAuth handler (login/logout)
-│       │   ├── register/route.ts        # POST — Register new user
 │       │   └── me/route.ts              # GET  — Current user profile
 │       ├── users/
 │       │   ├── route.ts                 # GET (list), POST (create) — Admin only
@@ -97,10 +96,12 @@ API is available at `http://localhost:3000/api`
 
 ### Authentication
 
-#### Register
+#### Register / Onboard User
 ```
-POST /api/auth/register
+POST /api/users
 ```
+> 🔒 Admin only. This endpoint is used by authenticated admins to onboard new users.
+
 Body:
 ```json
 {
@@ -130,6 +131,8 @@ GET /api/auth/me
 ---
 
 ### User Management (Admin only)
+
+> Admin users manage users via `/api/users`.
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -188,7 +191,8 @@ GET /api/auth/me
 
 | Action | Viewer | Analyst | Admin |
 |---|:---:|:---:|:---:|
-| Register / Login | ✅ | ✅ | ✅ |
+| Login | ✅ | ✅ | ✅ |
+| Admin onboarding / user creation | ❌ | ❌ | ✅ |
 | View own records | ✅ | ✅ | ✅ |
 | View all records | ❌ | ❌ | ✅ |
 | Create records | ❌ | ❌ | ✅ |
